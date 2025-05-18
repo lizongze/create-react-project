@@ -163,7 +163,7 @@ module.exports = {
               test: /\.scss$/,
               // css-hot-loader会增加打包的体积
               include: [
-                /apps(\/|\\)link(\/|\\)src(\/|\\)assets/,
+                /src(\/|\\)assets/,
               ],
               loader: 'happypack/loader',
               options: {
@@ -184,15 +184,92 @@ module.exports = {
              *  N.B: production 模式下用link/webpack.config.js的ts编译配置了；
              * 同样的配置（用了babel按需加载插件），这个happypack多线程编译时，会导致babel插件报错
              */
-            !isProduction && {
-              test: [/\.tsx?$/],
-              loader: 'happypack/loader',
-              options: {
-                id: "tsx"
-              },
-              // exclude: [/node_modules/, /\.scss.ts$/, /\.test.tsx?$/,  /\.js$/],
-              exclude: [/node_modules/, /\.scss.ts$/, /\.test.tsx?$/]
-            }
+            // !isProduction && {
+            //   test: [/\.tsx?$/],
+            //   loader: 'happypack/loader',
+            //   options: {
+            //     id: "tsx"
+            //   },
+            //   // exclude: [/node_modules/, /\.scss.ts$/, /\.test.tsx?$/,  /\.js$/],
+            //   exclude: [/node_modules/, /\.scss.ts$/, /\.test.tsx?$/]
+            // },
+
+            // {
+            //   test: [/\.tsx?$/],
+            //   use: [
+            //     /**
+            //      * babel-loader
+            //      * 用来做按需加载
+            //      * lodash => import
+            //      * athen-gen => import-hook
+            //      *
+            //      * 蚂蚁的import支持将import _ from 'lodash'的全量引入写法转换成按需引用
+            //      * @demo
+            //      * 	import _ from 'lodash';
+            //      * 	console.log(_.debounce) => console.log(require('lodash/debounce'))
+            //      *
+            //      * 不过，目前lodash无按需加载的效果，因为有的写了 import _ from 'lodash'，又没使用变量"_"，导致lodash依然被全量引入了
+            //      *
+            //      * TODO: 去掉全量引入lodash又没使用的代码 import _ from 'lodash'
+            //      * TODO: echart 可以参考官方来做下按需加载
+            //      *
+            //      * 其实，有了prefetch by worker这个神器（\(^o^)/），上面的收益也不是很大，就是减小点流量
+            //      */
+            //     {
+            //       loader: 'babel-loader',
+            //       options: {
+            //         babelrc: false,
+            //         presets: ['@babel/preset-typescript'],
+            //         plugins: [
+            //           ...babelPlugins,
+            //           // Sadly react-hot-loader is not compatible with hooks, at least to my knowledge and their issue github page. https://github.com/gaearon/react-hot-loader/issues/1088
+            //           // "react-hot-loader/babel",
+            //           /**
+            //            * N.B: lodash _.chain().map().sort().value() 会挂，所以全量引入了
+            //            */
+            //           // [
+            //           // 	'import',
+            //           // 	{
+            //           // 		camel2DashComponentName: false,
+            //           // 		libraryName: 'lodash',
+            //           // 		libraryDirectory: '',
+            //           // 		customName: (name) => {
+            //           // 			// console.log('import plugin name', name);
+            //           // 			if (name === 'id') {
+            //           // 				name = 'identity';
+            //           // 			}
+            //           // 			return `lodash/${name}`;
+            //           // 		}
+            //           // 	}
+            //           // ],
+            //           // lodashConfig,
+            //           // 'extract-hoc/babel',
+            //           // 'react-hot-loader/babel'
+            //         ],
+            //         compact: false,
+            //         sourceMap: false,
+            //         comments: false,
+            //         // N.B: 注释留下webpack支持的模块方法，如webpackChunkName被去掉了的话，包名就变hash了
+            //         shouldPrintComment: (value = '') =>
+            //           /webpack[A-Z]/.test(value),
+            //           // N.B: 有时候需要保留license时，将commextractComments设为true即可
+            //           // || value.indexOf("@license") >= 0
+            //           // || value.indexOf("@preserve") >= 0
+            //         // cacheDirectory: true,
+            //       },
+            //     },
+            //     {
+            //       loader: 'ts-loader',
+            //       options: {
+            //         happyPackMode: true,
+            //         experimentalWatchApi: true,
+            //         transpileOnly: true, // IMPORTANT! use transpileOnly mode to speed-up compilation
+            //       },
+            //     },
+            //   ],
+            //   exclude: [/node_modules/, /\.scss.ts$/, /\.test.tsx?$/],
+            // },
+
           ].filter(v => v)
         },
 
@@ -219,6 +296,7 @@ module.exports = {
             threadPool: happyThreadPool,
             loaders: ['style-loader', 'css-loader', 'sass-loader']
           }),
+          /*
           !isProduction && new HappyPack({
             id: 'tsx',
             threadPool: happyThreadPool,
@@ -244,6 +322,7 @@ module.exports = {
 
             ].filter(v => v)
           })
+          */
         ].filter(v => v)
       },
       customConfig
