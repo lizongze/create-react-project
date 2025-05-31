@@ -6,12 +6,16 @@
             "@main/*": ["./src/main/*"],
             "@root/*": ["./*"],
             "@components/*": ["./src/components/*"],
-            "@assets": ["./src/assets/*"]
+            "@assets/*": ["./src/assets/*"],
+            "@api/*": ["./src/api/*"],
+            "@api": ["./src/api"],
+            "@constants": ["./src/constants"],
+            "@constants/*": ["./src/constants/*"]
         },
         "allowSyntheticDefaultImports": true,
         "declaration": true,
         "esModuleInterop": true,
-        "experimentalDecorators": true,
+        "experimentalDecorators": false,
         "importHelpers": true,
         "jsx": "react-jsx",
         "lib": [

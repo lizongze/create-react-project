@@ -1,0 +1,11 @@
+.flex {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  max-height: 100%;
+  margin-bottom: 300px;
+  overflow: scroll;
+  height: 80%;
+  // align-items: ;
+  justify-content: space-around;
+}

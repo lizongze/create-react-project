@@ -5,9 +5,14 @@
   "./*.{js,jsx,ts,tsx}": [
     "prettier --write"
   ],
-  "./src/**/*.{css,sass,scss,less}": [
-    "stylelint --fix"
+  "**/*.{css,sass,scss,less}": [
+    "stylelint --fix",
+    "git add"
   ],
-   "**/*.{ts,tsx}": "eslint --ext .ts",
-   "**/*.scss": "stylelint --syntax scss"
+   "**/*.{ts,tsx}": "eslint  --cache --fix --ext .ts",
+   "**/*.scss": [
+    "stylelint --fix",
+    "git add",
+    "stylelint --syntax scss"
+  ]
 }

@@ -19,18 +19,25 @@
     ></script> -->
 
     <!-- 新的图标库 -->
-
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
     <!-- N.B: prefetchHtml -- prefetch plugin to cache common chunks -->
 
     <style>
       body {
-        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        background-color: white;
+        width: 100%;
       }
     </style>
   </head>
 
   <body>
-    <div id="root" style="height: 100%; display: flex;"></div>
+    <div id="root" style="height: 100%; display: flex; width: 100%;"></div>
     <script type="text/javascript">
     //   const firstPath = location.pathname.slice(1).split('/')[0];
     //   window.globalPrefix = firstPath ? `/${firstPath}` : '';

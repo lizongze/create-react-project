@@ -1,0 +1,19 @@
+.flex {
+  display: flex;
+  align-items: center;
+  // width: 100%;
+  right: 6px;
+  width: calc(100% - 20px);
+  position: absolute;
+  bottom: 0;
+  background: white;
+}
+.flexAuto {
+  flex: auto;
+  display: flex;
+}
+:global(.MuiButton-icon .MuiSvgIcon-root) {
+  &.icon {
+    font-size: 46px;
+  }
+}

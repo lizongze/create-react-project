@@ -101,6 +101,7 @@ module.exports = function (argv) {
         rules: [
           {
             test: /\.css$/,
+            // enforce: 'pre',
             use: ['style-loader', 'css-loader'],
           },
           // N.B: 给js文件也清除下注释
@@ -146,6 +147,12 @@ module.exports = function (argv) {
                   babelrc: false,
                   presets: ['@babel/preset-typescript'],
                   plugins: [
+                    [
+                      '@babel/plugin-proposal-decorators',
+                      {
+                        version: '2023-05',
+                      },
+                    ],
                     ...babelPlugins,
                     // Sadly react-hot-loader is not compatible with hooks, at least to my knowledge and their issue github page. https://github.com/gaearon/react-hot-loader/issues/1088
                     // "react-hot-loader/babel",
@@ -175,11 +182,10 @@ module.exports = function (argv) {
                   sourceMap: false,
                   comments: false,
                   // N.B: 注释留下webpack支持的模块方法，如webpackChunkName被去掉了的话，包名就变hash了
-                  shouldPrintComment: (value = '') =>
-                    /webpack[A-Z]/.test(value),
-                    // N.B: 有时候需要保留license时，将commextractComments设为true即可
-                    // || value.indexOf("@license") >= 0
-                    // || value.indexOf("@preserve") >= 0
+                  shouldPrintComment: (value = '') => /webpack[A-Z]/.test(value),
+                  // N.B: 有时候需要保留license时，将commextractComments设为true即可
+                  // || value.indexOf("@license") >= 0
+                  // || value.indexOf("@preserve") >= 0
                   // cacheDirectory: true,
                 },
               },
@@ -194,29 +200,6 @@ module.exports = function (argv) {
             ],
             exclude: [/node_modules/, /\.scss.ts$/, /\.test.tsx?$/],
           },
-          {
-            test: /\.(woff|woff2|eot|ttf)(\?.*$|$)/,
-            use: ['url-loader'],
-          },
-          {
-            test: /\.(svg)$/i,
-            use: ['svg-sprite-loader'],
-            include: svgDirs, // 把 svgDirs 路径下的所有 svg 文件交给 svg-sprite-loader 插件处理
-          },
-          {
-            test: /\.(png|jpg|gif|svg)$/,
-            use: ['url-loader?limit=8192&name=images/[contenthash:8].[name].[ext]'],
-            exclude: svgDirs,
-          },
-          // {
-          //     test: /\.(graphql|gql)$/,
-          //     exclude: /node_modules/,
-          //     use: [
-          //         {
-          //             loader: "graphql-tag/loader"
-          //         }
-          //     ]
-          // }
         ],
       },
 

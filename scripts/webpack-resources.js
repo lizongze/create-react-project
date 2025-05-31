@@ -17,7 +17,7 @@ console.log(`Webpack version: ${webpackVersion}`);
 
 const HMR_MODE_HOT = process.env.HMR === 'hot' ? true : false;
 const DIST_ENV = process.env.DIST_ENV
-const dist = "dist";
+const dist = 'dist';
 // const dist = DIST_ENV === "forTest" ? 'dist-test': 'dist';
 // const CODE_MINIFY = dist === "dist"
 
@@ -94,7 +94,14 @@ module.exports = {
 
   createServeConfig(customConfig, isProduction) {
     const WebpackNotifierPlugin = require('webpack-notifier');
-    const { SENTRY_RELEASE_NAME = '',SENTRY_PROJECT_DSN='',SENTRY_PROJECT_URL_PREFIX='' } = process.env
+    const { SENTRY_RELEASE_NAME = '', SENTRY_PROJECT_DSN='', SENTRY_PROJECT_URL_PREFIX='' } = process.env
+
+    const cssLoaderOptions = {
+      importLoaders: 2,
+      modules: {
+        localIdentName: isProduction ? '[hash:base64:5]' : '[local]_[hash:base64:5]'
+      }
+    }
 
     const ret = merge(
       {
@@ -126,8 +133,17 @@ module.exports = {
         module: {
           rules: [
             {
-              test: /\.scss$/,
-              enforce: 'pre',
+              test: /\.css$/,
+              // include: [ path.resolve('src') ],
+              use: [
+                isProduction ? undefined : 'css-hot-loader',
+                'style-loader',
+                'css-loader',
+              ].filter(v => v),
+            },
+            {
+              test: /\.(sass|scss|less)$/,
+              // enforce: 'pre',
               exclude: [
                 /node_modules/,
                 /src(\/|\\)assets/,
@@ -139,60 +155,50 @@ module.exports = {
                 // },
                 {
                   loader: 'css-loader', // translates CSS into CommonJS
-                  options: {
-                    modules: true,
-                    importLoaders: 2,
-                    localIdentName: isProduction ? undefined : '[name]_[local]_[hash:base64:5]',
-                    minimize: false,
-                  }
+                  options: cssLoaderOptions
                 },
                 {
                   loader: 'postcss-loader',
-                  options: {
-                    plugins: function() {
-                      return [require('autoprefixer')];
-                    }
-                  }
+                  // options: {
+                  //   postcssOptions: {
+                  //     plugins: function() {
+                  //       return [
+                  //         isProduction ? require('autoprefixer') : undefined,
+                  //       ].filter(v => v);
+                  //     }
+                  //   }
+                  // }
                 },
                 {
                   loader: 'sass-loader'
                 }
               ]
             },
-            {
-              test: /\.scss$/,
-              // css-hot-loader会增加打包的体积
-              include: [
-                /src(\/|\\)assets/,
-              ],
-              loader: 'happypack/loader',
-              options: {
-                id: "scss"
-              },
-              //use: [ 'style-loader', 'css-loader', 'sass-loader' ]
+            // {
+            //   test: /\.scss$/,
+            //   // css-hot-loader会增加打包的体积
+            //   include: [
+            //     /src(\/|\\)assets/,
+            //   ],
+            //   loader: 'happypack/loader',
+            //   options: {
+            //     id: "scss"
+            //   },
+            //   //use: [ 'style-loader', 'css-loader', 'sass-loader' ]
 
-              // use:
-              // 	env === 'production'
-              // 		? [ MiniCssExtractPlugin.loader, 'css-loader?importLoaders=1' ]
-              // 		: [ 'css-hot-loader', MiniCssExtractPlugin.loader, 'css-loader?importLoaders=1' ]
-              // /*  use: ExtractTextPlugin.extract({
-              //   fallback: 'style-loader',
-              //   use: ['css-hot-loader', 'css-loader', 'postcss-loader', 'sass-loader']
-              // }) */
-            },
+            // use:
+            // 	env === 'production'
+            // 		? [ MiniCssExtractPlugin.loader, 'css-loader?importLoaders=1' ]
+            // 		: [ 'css-hot-loader', MiniCssExtractPlugin.loader, 'css-loader?importLoaders=1' ]
+            // /*  use: ExtractTextPlugin.extract({
+            //   fallback: 'style-loader',
+            //   use: ['css-hot-loader', 'css-loader', 'postcss-loader', 'sass-loader']
+            // }) */
+            // },
             /**
              *  N.B: production 模式下用link/webpack.config.js的ts编译配置了；
              * 同样的配置（用了babel按需加载插件），这个happypack多线程编译时，会导致babel插件报错
              */
-            // !isProduction && {
-            //   test: [/\.tsx?$/],
-            //   loader: 'happypack/loader',
-            //   options: {
-            //     id: "tsx"
-            //   },
-            //   // exclude: [/node_modules/, /\.scss.ts$/, /\.test.tsx?$/,  /\.js$/],
-            //   exclude: [/node_modules/, /\.scss.ts$/, /\.test.tsx?$/]
-            // },
 
             // {
             //   test: [/\.tsx?$/],
@@ -269,7 +275,29 @@ module.exports = {
             //   ],
             //   exclude: [/node_modules/, /\.scss.ts$/, /\.test.tsx?$/],
             // },
-
+            {
+              test: /\.(woff|woff2|eot|ttf)(\?.*$|$)/,
+              use: ['url-loader'],
+            },
+            // {
+            //   test: /\.(svg)$/i,
+            //   use: ['svg-sprite-loader'],
+            //   // include: svgDirs, // 把 svgDirs 路径下的所有 svg 文件交给 svg-sprite-loader 插件处理
+            // },
+            {
+              test: /\.(png|jpg|gif|svg)$/,
+              use: ['url-loader?limit=8192&name=images/[contenthash:8].[name].[ext]'],
+              // exclude: svgDirs,
+            },
+          // {
+          //     test: /\.(graphql|gql)$/,
+          //     exclude: /node_modules/,
+          //     use: [
+          //         {
+          //             loader: "graphql-tag/loader"
+          //         }
+          //     ]
+          // }
           ].filter(v => v)
         },
 
@@ -366,7 +394,8 @@ module.exports = {
       },
       config
     );
-    console.log('config', config);
+    // console.log('config', config);
+    // console.log('rules', config.module.rules);
     return config;
   }
 };

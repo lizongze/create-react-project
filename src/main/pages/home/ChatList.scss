@@ -1,0 +1,10 @@
+:global(.MuiList-root) {
+  &.container {
+    max-height: calc(100% - 100px);
+    height: calc(100% - 100px);
+    overflow: auto;
+    position: absolute;
+    width: 100%;
+    background: white;
+  }
+}

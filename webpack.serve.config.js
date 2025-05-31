@@ -1,6 +1,6 @@
-let path = require('path');
+const path = require('path');
 const os = require('os');
-let resources = require('./scripts/webpack-resources');
+const resources = require('./scripts/webpack-resources');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
@@ -96,7 +96,7 @@ module.exports = (env) => {
       // 开启持久化缓存
       type: 'filesystem',
       buildDependencies: {
-        config: [__filename],
+        config: [__filename, path.resolve(__dirname, 'tsconfig.json')],
       },
     },
     snapshot: {
@@ -150,56 +150,6 @@ module.exports = (env) => {
     module: {
       rules: [
         {
-          test: /\.css$/,
-          // include: [ path.resolve('src') ],
-          use: [
-            'css-hot-loader',
-            'style-loader',
-            'css-loader',
-            {
-              loader: 'postcss-loader',
-              options: {
-                plugins: function () {
-                  return [
-                    postcssPresetEnv({
-                      stage: 0,
-                    }),
-                    require('autoprefixer'),
-                  ];
-                },
-              },
-            },
-          ],
-        },
-        {
-          test: /\.scss$/,
-          enforce: 'pre',
-          exclude: [/node_modules/],
-          use: [
-            'style-loader',
-            {
-              loader: 'css-loader', // translates CSS into CommonJS
-              options: {
-                modules: true,
-                importLoaders: 2,
-                localIdentName: isProduction ? undefined : '[name]_[local]_[hash:base64:5]',
-                minimize: false,
-              },
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                plugins: function () {
-                  return [require('autoprefixer')];
-                },
-              },
-            },
-            {
-              loader: 'sass-loader',
-            },
-          ],
-        },
-        {
           test: [/\.tsx?$/],
           use: [
             // N.B: 持久化缓存，类似webpack5文件缓存
@@ -219,6 +169,12 @@ module.exports = (env) => {
                 presets: ['@babel/preset-typescript'],
                 plugins: [
                   // '@babel/plugin-syntax-dynamic-import',
+                  [
+                    '@babel/plugin-proposal-decorators',
+                    {
+                      version: '2023-05',
+                    },
+                  ],
                   'react-refresh/babel',
                 ],
               },
@@ -235,29 +191,6 @@ module.exports = (env) => {
           ],
           exclude: [/node_modules/, /\.scss.ts$/, /\.test.tsx?$/],
         },
-        {
-          test: /\.(woff|woff2|eot|ttf)(\?.*$|$)/,
-          use: ['url-loader'],
-        },
-        {
-          test: /\.(svg)$/i,
-          use: ['svg-sprite-loader'],
-          include: svgDirs, // 把 svgDirs 路径下的所有 svg 文件交给 svg-sprite-loader 插件处理
-        },
-        {
-          test: /\.(png|jpg|gif|svg)$/,
-          use: ['url-loader?limit=8192&name=images/[hash:8][name].[ext]'],
-          exclude: svgDirs,
-        },
-        // {
-        //     test: /\.(graphql|gql)$/,
-        //     exclude: /node_modules/,
-        //     use: [
-        //         {
-        //             loader: 'graphql-tag/loader'
-        //         }
-        //     ]
-        // }
       ].filter((v) => v),
     },
 
@@ -296,6 +229,7 @@ module.exports = (env) => {
     resolve: {
       // modules: ['node_modules', path.join(__dirname, './node_modules')],
       //   extensions: [ '.js', '.jsx', '.ts', '.tsx', '.scss', '.json' ],
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.css', '.scss', '.sass', '.less'],
       alias: {
         // 'react-dom': '@hot-loader/react-dom',
         // '@root': path.resolve(APP_PATH),

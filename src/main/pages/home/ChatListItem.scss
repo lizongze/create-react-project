@@ -1,0 +1,31 @@
+:global(.MuiListItemText-root) {
+  &.flexRevert {
+    flex: revert;
+  }
+}
+
+.flex {
+  display: flex;
+  width: 100%;
+}
+
+.flexEnd {
+  justify-content: flex-end;
+}
+
+.btnBg {
+  background-color: rgba(100, 103, 242, 0.3);
+  border-radius: 30px;
+  padding: 6px 12px;
+  // padding-left: 12px;
+  // padding-right: 12px;
+}
+
+.paddingRight {
+  padding-right: 12px;
+}
+
+.flexCenter {
+  display: flex;
+  align-items: center;
+}
