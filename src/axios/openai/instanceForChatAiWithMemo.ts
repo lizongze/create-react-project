@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const instanceForChatAiWithMemo = axios.create({
   withCredentials: false,
-  timeout: 5000,
+  timeout: 15000,
   headers: {
     // apiKey: OpenAiKey,
     // dangerouslyAllowBrowser: true,
